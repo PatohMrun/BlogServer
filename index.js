@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 //   else console.log("Database Connected");
 // });
 
-const db = mysql.createConnection(process.env.DATABASE_URL);
+const db = mysql.createConnection('mysql://ruhevgyur9isopdwey7h:pscale_pw_KRUtxiXzmIZuHN75FIeGf4dHSeIJ8ZWsm1tVdAHNNl5@us-east.connect.psdb.cloud/blog_db?ssl={"rejectUnauthorized":true}');
 db.connect((err) => {
   if (err) console.log(err);
   else console.log("Connected to PlanetScale!");
