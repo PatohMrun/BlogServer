@@ -8,28 +8,28 @@ const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const secretKey = process.env.SALT; // replace this with your own secret key
+const secretKey = process.env.SALT; // replacee this with your own secret key
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// const db = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: process.env.PD,
-//   database: process.env.DB,
-// });
-
-// db.connect((err, req) => {
-//   if (err) console.log(err);
-//   else console.log("Database Connected");
-// });
-
-const db = mysql.createConnection(process.env.DATABASE_URL);
-db.connect((err) => {
-  if (err) console.log(err);
-  else console.log("Connected to PlanetScale!");
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: process.env.PD,
+  database: process.env.DB,
 });
+
+db.connect((err, req) => {
+  if (err) console.log(err);
+  else console.log("Database Connected");
+});
+
+// const db = mysql.createConnection(process.env.DATABASE_URL);
+// db.connect((err) => {
+//   if (err) console.log(err);
+//   else console.log("Connected to PlanetScale!");
+// });
 
 app.get("/blogs", (err, res) => {
   const data = "select*from articles";
