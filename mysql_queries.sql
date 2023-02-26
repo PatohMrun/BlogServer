@@ -5,7 +5,9 @@ create database blogs;
     Title varchar(500) not null,
     Content longtext not null,
     BlogType varchar(100) not null,
-    Author varchar(50) not null
+    Author varchar(50) not null,
+    email VARCHAR(255) NOT NULL,
+    FOREIGN KEY(email) REFERENCES Admins(email)
     );
 
 
@@ -23,14 +25,6 @@ CREATE TABLE Admins (
   description 	VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE comments (
-  comment_id INT AUTO_INCREMENT PRIMARY KEY,
-  id varchar(5) NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  parent_comment_id INT DEFAULT NULL,
-  email VARCHAR(255) NOT NULL,
-  comment varchar(500) NOT NULL
-);
 
 CREATE TABLE replies (
   RID INT AUTO_INCREMENT PRIMARY KEY,
@@ -38,6 +32,13 @@ CREATE TABLE replies (
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
   comment varchar(500) NOT NULL
+);
+CREATE TABLE messages (
+  messageID INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  messages varchar(500) NOT NULL,
+  sent_at varchar(20) NOT NULL
 );
 
 CREATE TABLE comments (

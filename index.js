@@ -83,14 +83,56 @@ app.post("/blogs", (req, res) => {
   const Author = req.body.Author;
   const Content = req.body.content;
   const BlogType = req.body.BlogType;
+  const email = req.body.email;
 
   const InsertBlogs =
-    "insert into articles(Title,Author,Content,BlogType ) values(?,?,?,?)";
-  db.query(InsertBlogs, [Title, Author, Content, BlogType], (err, result) => {
+    "insert into articles(Title,Author,Content,BlogType,email ) values(?,?,?,?,?)";
+  db.query(
+    InsertBlogs,
+    [Title, Author, Content, BlogType, email],
+    (err, result) => {
+      if (err) res.send(err.message);
+      else res.send(result);
+    }
+  );
+});
+//inserting comments in the database
+app.post("/messages", (req, res) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const messages = req.body.message;
+
+  const InsertMessages =
+    "insert into messages(name,email,messages, sent_at) values(?,?,?,NOW())";
+  db.query(InsertMessages, [name, email, messages], (err, result) => {
     if (err) res.send(err.message);
     else res.send(result);
+    console.log(result);
   });
 });
+
+
+app.get("/sms", (err, res) => {
+  const data = "select*from messages";
+  db.query(data, (err, mes) => {
+    if (err) {
+      console.log("no data");
+    } else {
+      res.send(mes);
+    }
+  });
+});
+
+app.get("/GuestBloggers",(err, res)=>{
+  const NoOfAdmins= 'SELECT count(*) as Bloggers from Admins';
+  db.query(NoOfAdmins,(err,admins)=>{
+    if (err) {
+      console.log(err);
+    }
+    else res.send(admins);
+  })
+  })
+
 app.post("/signUps", async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -148,6 +190,8 @@ app.post("/signUpAdmins", async (req, res) => {
     }
   });
 });
+
+
 
 app.post("/comments", (req, res) => {
   const name = req.body.name;
@@ -301,7 +345,7 @@ app.post("/login", (req, res) => {
 
             // sign a JWT token for the authenticated user
             const token = jwt.sign(
-              { role: "admin", name: results[0].name },
+              { role: "admin", name: results[0].name, email: results[0].email },
               secretKey,
               {
                 expiresIn: "1h",
@@ -336,7 +380,7 @@ app.post("/login", (req, res) => {
         }
         // sign a JWT token for the authenticated user
         const token = jwt.sign(
-          { role: "user", name: results[0].name },
+          { role: "user", name: results[0].name, email: results[0].email },
           secretKey,
           {
             expiresIn: "1h",
