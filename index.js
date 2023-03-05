@@ -86,7 +86,7 @@ app.post("/blogs", (req, res) => {
   const email = req.body.email;
 
   const InsertBlogs =
-    "insert into articles(Title,Author,Content,BlogType,email ) values(?,?,?,?,?)";
+    "insert into articles(Title,Author,Content,BlogType,email,Date_created ) values(?,?,?,?,?,NOW())";
   db.query(
     InsertBlogs,
     [Title, Author, Content, BlogType, email],
@@ -96,6 +96,28 @@ app.post("/blogs", (req, res) => {
     }
   );
 });
+//Update a blog
+app.post("/blogUpdate", (req, res) => {
+  const Title = req.body.Title;
+  const Author = req.body.Author;
+  const Content = req.body.content;
+  const BlogType = req.body.BlogType;
+  const email = req.body.email;
+  const id = req.body.id;
+
+  const updateBlog =
+    "UPDATE articles SET Title = ?, Author = ?, Content = ?, BlogType = ?, email = ?, Date_created = NOW() WHERE id = ?";
+  db.query(
+    updateBlog,
+    [Title, Author, Content, BlogType, email, id],
+    (err, result) => {
+      if (err) res.send(err.message);
+      else res.send(result);
+    }
+  );
+});
+
+
 //inserting comments in the database
 app.post("/messages", (req, res) => {
   const name = req.body.name;
@@ -133,6 +155,31 @@ app.get("/GuestBloggers",(err, res)=>{
   })
   })
 
+  //Selecting the pending Approval
+app.get("/Approval",(err, res)=>{
+  const Approvals= 'SELECT *from Admins where Approval="pending"';
+  db.query(Approvals,(err,admins)=>{
+    if (err) {
+      console.log(err);
+    }
+    else res.send(admins);
+  })
+  })
+  //Selecting the pending Approval
+  app.post("/Approved", (req, res) => {
+    const { email } = req.body; // get the email from the request body
+    const Approvals = "UPDATE Admins SET Approval = 'Approved' WHERE email = ?";
+    db.query(Approvals, [email], (err, result) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send("Error updating Approval status");
+      } else {
+        console.log(`Updated Approval stat  us for ${email}`);
+        res.send("Approval status updated successfully");
+      }
+    });
+  });
+  
 app.post("/signUps", async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -178,6 +225,7 @@ app.post("/signUpAdmins", async (req, res) => {
         [name, email, password, phone_number, description],
         (error, result) => {
           if (error) {
+            console.log(error);
             return res
               .status(500)
               .json({ error: "Error inserting data into the database" });
@@ -345,7 +393,7 @@ app.post("/login", (req, res) => {
 
             // sign a JWT token for the authenticated user
             const token = jwt.sign(
-              { role: "admin", name: results[0].name, email: results[0].email },
+              { role: "admin", name: results[0].name, email: results[0].email},
               secretKey,
               {
                 expiresIn: "1h",
@@ -354,6 +402,7 @@ app.post("/login", (req, res) => {
             return res.status(200).json({
               message: "as Admin",
               token,
+              Approval:results[0].Approval,
             });
           }
         );
