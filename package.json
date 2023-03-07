@@ -54,6 +54,7 @@
     "is-glob": "^4.0.3",
     "is-number": "^7.0.0",
     "is-property": "^1.0.2",
+    "jsonwebtoken": "^8.5.1",
     "long": "^5.2.1",
     "lru-cache": "^7.14.1",
     "media-typer": "^0.3.0",
@@ -78,6 +79,7 @@
     "picomatch": "^2.3.1",
     "proxy-addr": "^2.0.7",
     "pstree.remy": "^1.1.8",
+    "pusher": "^5.1.2",
     "qs": "^6.11.0",
     "range-parser": "^1.2.1",
     "raw-body": "^2.5.1",
@@ -101,8 +103,7 @@
     "undefsafe": "^2.0.5",
     "unpipe": "^1.0.0",
     "utils-merge": "^1.0.1",
-    "vary": "^1.1.2",
-    "jsonwebtoken": "^8.5.1"
+    "vary": "^1.1.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
