@@ -57,6 +57,11 @@ CREATE TABLE likes (
     post_id INT(5) NOT NULL,
     isLiked varchar(4) NOT NULL
 );
+CREATE TABLE views (
+    like_id INT PRIMARY KEY AUTO_INCREMENT,
+    post_id INT(5) NOT NULL,
+    isViewed varchar(10) NOT NULL
+);
 
 -- insert into articles (Title,Content,BlogType,Author,email)
 -- values("Testing","orem ipsum dolor sit, amet consectetur adipisicing elit. Saepe odio nam perspiciatis dicta autem sequi nesciunt, veritatis quibusdam vitae sunt doloribus quo vero dolorum impedit reprehenderit enim, officia ut quae? Consectetur nisi commodi perferendis debitis reiciendis, possimus error minus laudantium illo? Neque reiciendis placeat maxime commodi at omnis nihil rerum nisi autem est eaque fugiat ex nam saepe corporis, rem expedita quia sint iure! Provident labore laboriosam, porro quas aperiam quis ipsa eum fugiat impedit? Voluptate commodi odio nisi sed facere corporis repellat delectus consectetur consequatur. Ad est voluptatem laborum, velit nobis, odio id aliquid itaque labore tempora mollitia. Quidem?", "Technologies","Sir Justus", "jgathiru02@gmail.com");
