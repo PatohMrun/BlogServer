@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer")
 const saltRounds = 10;
 const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
@@ -22,23 +23,23 @@ const pusher = new Pusher({
   useTLS: true
 });
 
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: process.env.PD,
-  database: process.env.DB,
-});
+// const db = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: process.env.PD,
+//   database: process.env.DB,
+// });
 
-db.connect((err, req) => {
-  if (err) console.log(err);
-  else console.log("Database Connected");
-});
+// db.connect((err, req) => {
+//   if (err) console.log(err);
+//   else console.log("Database Connected");
+// });
 
-// const db = mysql.createConnection('mysql://ruhevgyur9isopdwey7h:pscale_pw_KRUtxiXzmIZuHN75FIeGf4dHSeIJ8ZWsm1tVdAHNNl5@us-east.connect.psdb.cloud/blog_db?ssl={"rejectUnauthorized":true}');
-// db.connect((err) => {
-  //   if (err) console.log(err);
-  //   else console.log("Connected to PlanetScale!");
-  // });
+const db = mysql.createConnection('mysql://ruhevgyur9isopdwey7h:pscale_pw_KRUtxiXzmIZuHN75FIeGf4dHSeIJ8ZWsm1tVdAHNNl5@us-east.connect.psdb.cloud/blog_db?ssl={"rejectUnauthorized":true}');
+db.connect((err) => {
+    if (err) console.log(err);
+    else console.log("Connected to PlanetScale!");
+  });
   
   // db.query("SELECT * FROM comments", (err, results) => {
   //   if (err) throw err;
@@ -54,6 +55,43 @@ db.connect((err, req) => {
     }
   });
 });
+
+
+//sending mails using node mailer
+app.post("/mails",(req,res)=>{
+     Name = req.body.Name;
+     Email = req.body.Email;
+     Message = req.body.Message;
+    console.log(Name, Email, Message);
+    // do something with the data, e.g. send to email
+    
+    let transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
+        },
+    });
+    try {
+        // Send the email using nodemailer
+        const emailRes = transporter.sendMail({
+          from: { name: Name , address: Email },
+          to: process.env.EMAIL,
+          replyTo: Email,
+          subject: "Message From Your website",
+          html: `
+          <p>${Message}</p>
+          <h4>Message From: ${Name}</h4>
+        `,
+        });
+        console.log("message sent");
+        res.send('Received the message and sent email!');
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Failed to send email');
+    }
+})
+
 
 app.get("/blogs/:id", (req, res) => {
   const { id } = req.params;
