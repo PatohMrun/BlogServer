@@ -23,23 +23,23 @@ const pusher = new Pusher({
   useTLS: true
 });
 
-// const db = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: process.env.PD,
-//   database: process.env.DB,
-// });
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: process.env.PD,
+  database: process.env.DB,
+});
 
-// db.connect((err, req) => {
-//   if (err) console.log(err);
-//   else console.log("Database Connected");
-// });
+db.connect((err, req) => {
+  if (err) console.log(err);
+  else console.log("Database Connected");
+});
 
-const db = mysql.createConnection('mysql://ruhevgyur9isopdwey7h:pscale_pw_KRUtxiXzmIZuHN75FIeGf4dHSeIJ8ZWsm1tVdAHNNl5@us-east.connect.psdb.cloud/blog_db?ssl={"rejectUnauthorized":true}');
-db.connect((err) => {
-    if (err) console.log(err);
-    else console.log("Connected to PlanetScale!");
-  });
+// const db = mysql.createConnection('mysql://ruhevgyur9isopdwey7h:pscale_pw_KRUtxiXzmIZuHN75FIeGf4dHSeIJ8ZWsm1tVdAHNNl5@us-east.connect.psdb.cloud/blog_db?ssl={"rejectUnauthorized":true}');
+// db.connect((err) => {
+//     if (err) console.log(err);
+//     else console.log("Connected to PlanetScale!");
+//   });
   
   // db.query("SELECT * FROM comments", (err, results) => {
   //   if (err) throw err;
@@ -61,10 +61,11 @@ app.get("/",(req,res)=>{
 })
 
 //sending mails using node mailer
+
 app.post("/mails",(req,res)=>{
-     Name = req.body.name;
-     Email = req.body.email;
-     Message = req.body.message;
+    const Name = req.body.name;
+    const Email = req.body.email;
+    const Message = req.body.message;
     console.log(Name, Email, Message);
     // do something with the data, e.g. send to email
 
