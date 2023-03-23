@@ -62,12 +62,12 @@ app.get("/",(req,res)=>{
 
 //sending mails using node mailer
 app.post("/mails",(req,res)=>{
-     Name = req.body.Name;
-     Email = req.body.Email;
-     Message = req.body.Message;
+     Name = req.body.name;
+     Email = req.body.email;
+     Message = req.body.message;
     console.log(Name, Email, Message);
     // do something with the data, e.g. send to email
-    
+
     let transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -172,20 +172,20 @@ app.post("/blogUpdate", (req, res) => {
 });
 
 
-//inserting message in the database
-app.post("/messages", (req, res) => {
-  const name = req.body.name;
-  const email = req.body.email;
-  const messages = req.body.message;
+// //inserting message in the database
+// app.post("/messages", (req, res) => {
+//   const name = req.body.name;
+//   const email = req.body.email;
+//   const messages = req.body.message;
 
-  const InsertMessages =
-    "insert into messages(name,email,messages, sent_at) values(?,?,?,NOW())";
-  db.query(InsertMessages, [name, email, messages], (err, result) => {
-    if (err) res.send(err.message);
-    else res.send(result);
-    console.log(result);
-  });
-});
+//   const InsertMessages =
+//     "insert into messages(name,email,messages, sent_at) values(?,?,?,NOW())";
+//   db.query(InsertMessages, [name, email, messages], (err, result) => {
+//     if (err) res.send(err.message);
+//     else res.send(result);
+//     console.log(result);
+//   });
+// });
 
 
 app.get("/sms", (err, res) => {
