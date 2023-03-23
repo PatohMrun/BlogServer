@@ -56,6 +56,9 @@ db.connect((err) => {
   });
 });
 
+app.get("/",(req,res)=>{
+  res.send('Testing')
+})
 
 //sending mails using node mailer
 app.post("/mails",(req,res)=>{
