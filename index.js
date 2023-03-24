@@ -307,15 +307,17 @@ app.get("/Approval",(err, res)=>{
 
   app.post("/sendmail", async (req, res) => {
     const { email } = req.body; // get the email from the request body
-
-    let transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASS,
-      },
-    });
+  
     try {
+      // create nodemailer transporter object
+      let transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
+        },
+      });
+  
       // send email using nodemailer
       const emailRes = await transporter.sendMail({
         from: { name: "Justus Gitau", address: process.env.EMAIL },
@@ -337,6 +339,7 @@ app.get("/Approval",(err, res)=>{
       res.status(500).send("Failed to update approval status and send email");
     }
   });
+  
   
 app.post("/signUps", async (req, res) => {
   const { name, email, password } = req.body;
