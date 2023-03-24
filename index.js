@@ -23,23 +23,23 @@ const pusher = new Pusher({
   useTLS: true
 });
 
-// const db = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: process.env.PD,
-//   database: process.env.DB,
-// });
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: process.env.PD,
+  database: process.env.DB,
+});
 
-// db.connect((err, req) => {
-//   if (err) console.log(err);
-//   else console.log("Database Connected");
-// });
+db.connect((err, req) => {
+  if (err) console.log(err);
+  else console.log("Database Connected");
+});
 
-const db = mysql.createConnection('mysql://ruhevgyur9isopdwey7h:pscale_pw_KRUtxiXzmIZuHN75FIeGf4dHSeIJ8ZWsm1tVdAHNNl5@us-east.connect.psdb.cloud/blog_db?ssl={"rejectUnauthorized":true}');
-db.connect((err) => {
-    if (err) console.log(err);
-    else console.log("Connected to PlanetScale!");
-  });
+// const db = mysql.createConnection('mysql://ruhevgyur9isopdwey7h:pscale_pw_KRUtxiXzmIZuHN75FIeGf4dHSeIJ8ZWsm1tVdAHNNl5@us-east.connect.psdb.cloud/blog_db?ssl={"rejectUnauthorized":true}');
+// db.connect((err) => {
+//     if (err) console.log(err);
+//     else console.log("Connected to PlanetScale!");
+//   });
   
   // db.query("SELECT * FROM comments", (err, results) => {
   //   if (err) throw err;
@@ -291,48 +291,52 @@ app.get("/Approval",(err, res)=>{
   })
   })
   //Selecting the pending Approval
-  app.post("/Approved", async (req, res) => {
+  app.post("/Approved", async(req, res) => {
     const { email } = req.body; // get the email from the request body
     const Approvals = "UPDATE Admins SET Approval = 'Approved' WHERE email = ?";
-    db.query(Approvals, [email], async (err, result) => {
+    db.query(Approvals, [email], (err, result) => {
       if (err) {
         console.log(err);
         res.status(500).send("Error updating Approval status");
       } else {
-        console.log(`Updated Approval status for ${email}`);
-        let transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            user: process.env.EMAIL,
-            pass: process.env.PASS,
-          },
-        });
-  
-        try {
-          // send email using nodemailer
-          const emailRes = await transporter.sendMail({
-            from: { name: "Justus Gitau", address: process.env.EMAIL },
-            to: email,
-            replyTo: process.env.EMAIL,
-            subject: "Approval",
-            html: `
-              <p>Your account is Approved you can login now using this link</p>
-              <p>https://innovate-zone.vercel.app/login</p>
-              <h4>Message From: InnovateZone</h4>
-            `,
-          });
-          console.log("message sent");
-          res.status(200).json({
-            message: "Received the message and sent email!",
-          }); // added a response message
-        } catch (error) {
-          console.log(error);
-          res.status(500).send("Failed to send email");
-        }
+        console.log(`Updated Approval stat  us for ${email}`);
+        res.send("Approval status updated successfully");
       }
     });
   });
-  
+
+  app.post("/sendmail", async (req, res) => {
+    const { email } = req.body; // get the email from the request body
+
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASS,
+      },
+    });
+    try {
+      // send email using nodemailer
+      const emailRes = await transporter.sendMail({
+        from: { name: "Justus Gitau", address: process.env.EMAIL },
+        to: email,
+        replyTo: process.env.EMAIL,
+        subject: "Approval",
+        html: `
+          <p>Your account is Approved you can login now using this link</p>
+          <p>https://innovate-zone.vercel.app/login</p>
+          <h4>Message From: InnovateZone</h4>
+        `,
+      });
+      console.log("message sent");
+      res.status(200).json({
+        message: "Received the message and sent email!",
+      }); // added a response message
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Failed to update approval status and send email");
+    }
+  });
   
 app.post("/signUps", async (req, res) => {
   const { name, email, password } = req.body;
