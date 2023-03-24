@@ -307,9 +307,9 @@ app.get("/Approval",(err, res)=>{
 
 
   let email='';
-  app.post('/sendmail', async (req, res) => {
+  app.post('/email', async (req, res) => {
     email = req.body; // get the email from the request body
-
+    console.log(email);
 
     // create nodemailer transporter object
     let transporter = nodemailer.createTransport({
