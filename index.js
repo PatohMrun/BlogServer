@@ -12,7 +12,10 @@ const Pusher = require("pusher");
 
 const secretKey = process.env.SALT; // replacee this with your own secret key
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: 'https://innovate-zone.vercel.app/',
+};
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 const pusher = new Pusher({
@@ -22,6 +25,17 @@ const pusher = new Pusher({
   cluster: "ap2",
   useTLS: true
 });
+
+//restricting so that the server can only communucate with the front end only
+// app.use((req, res, next) => {
+//   const apiKey = req.query.api_key;
+//   if (!apiKey || apiKey !== 'UD9VZKyRU5eIZzPq') {
+//     res.status(401).send('Unauthorized Access');
+//   } else {
+//     next();
+//   }
+// });
+
 
 // const db = mysql.createConnection({
 //   host: "localhost",
@@ -45,19 +59,27 @@ db.connect((err) => {
   //   if (err) throw err;
   //   pusher.trigger("innovate-Zone", "inserted", results);
   // });
-  app.get("/blogs", (err, res) => {
-  const data = "select*from articles";
-  db.query(data, (err, blogs) => {
-    if (err) {
-      console.log("no data");
-    } else {
-      res.send(blogs);
-    }
-  });
+
+
+//selecting secured Routes
+app.get('/blogs', (req, res) => {
+  const apiKey = req.query.api_key;
+  if (!apiKey || apiKey !== 'UD9VZKyRU5eIZzPq') {
+    res.status(401).send('Unauthorized');
+  } else {
+    const data = "select*from articles";
+    db.query(data, (err, blogs) => {
+      if (err) {
+        console.log("no data");
+      } else {
+        res.send(blogs);
+      }
+    });
+  }
 });
 
 app.get("/",(req,res)=>{
-  res.send('Testing')
+  res.send('Never go to bed mad. Stay up and fight😂')
 })
 
 //sending mails using node mailer
@@ -102,6 +124,11 @@ app.get("/",(req,res)=>{
 
 
 app.get("/blogs/:id", (req, res) => {
+  const apiKey = req.query.api_key;
+  if (!apiKey || apiKey !== 'UD9VZKyRU5eIZzPq') {
+    res.status(401).send('Unauthorized');
+    return
+  }
   const { id } = req.params;
   const data = "select * from articles where id=?";
   db.query(data, id, (err, blogs) => {
@@ -269,15 +296,35 @@ app.get("/sms", (err, res) => {
   });
 });
 
-app.get("/GuestBloggers",(err, res)=>{
-  const NoOfAdmins= 'SELECT count(*) as Bloggers from Admins where Approval="Approved"';
+app.get("/GuestBloggers",(req, res)=>{
+  const apiKey = req.query.api_key;
+    if (!apiKey || apiKey !== 'UD9VZKyRU5eIZzPq') {
+      res.status(401).send('Unauthorized Access');
+      return
+    }
+  const NoOfAdmins= 'SELECT * from Admins where Approval="Approved"';
+  // const NoOfAdmins= 'SELECT count(*) as Bloggers from Admins where Approval="Approved"';
   db.query(NoOfAdmins,(err,admins)=>{
     if (err) {
       console.log(err);
     }
     else res.send(admins);
-    
   })
+  })
+
+  app.post("/removeAdmin",(req,res)=>{
+    const email=req.body.email
+    console.log("the email is "+email);
+    const remove="Delete from Admins where email = ?";
+    db.query(remove,[email],(err, result)=>{
+      if (err){
+        console.log(err);
+      }
+      else{
+        console.log(email + ' removed successfully');
+        res.send(email + ' removed successfully')
+      }
+    })
   })
 
   //Selecting the pending Approval
@@ -290,10 +337,26 @@ app.get("/Approval",(err, res)=>{
     else res.send(admins);
   })
   })
+
   //Selecting the pending Approval
   app.post("/Approved", async(req, res) => {
     const { email } = req.body; // get the email from the request body
     const Approvals = "UPDATE Admins SET Approval = 'Approved' WHERE email = ?";
+    db.query(Approvals, [email], (err, result) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send("Error updating Approval status");
+      } else {
+        console.log(`Updated Approval stat  us for ${email}`);
+        res.send("Approval status updated successfully");
+      }
+    });
+  });
+  //Rejecting the approval request
+  app.post("/rejected", async(req, res) => {
+    const { email } = req.body; // get the email from the request body
+    console.log("The email is  "+email);
+    const Approvals = "UPDATE Admins SET Approval = 'rejected' WHERE email = ?";
     db.query(Approvals, [email], (err, result) => {
       if (err) {
         console.log(err);
