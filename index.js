@@ -12,10 +12,8 @@ const Pusher = require("pusher");
 
 const secretKey = process.env.SALT; // replacee this with your own secret key
 const app = express();
-const corsOptions = {
-  origin: 'https://innovate-zone.vercel.app/',
-};
-app.use(cors(corsOptions));
+
+app.use(cors());
 app.use(bodyParser.json());
 
 const pusher = new Pusher({
