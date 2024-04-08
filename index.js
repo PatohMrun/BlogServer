@@ -377,7 +377,7 @@ app.get("/Approval",(err, res)=>{
 app.post("/signUps", async (req, res) => {
   const { name, email, password } = req.body;
 
-  // const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const checkEmail = "SELECT * FROM Admins WHERE email = $1";
   const query = "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)";
@@ -387,14 +387,14 @@ app.post("/signUps", async (req, res) => {
       console.log("this email already in use" + result); //email already exists
       return res.status(500).json({ error: "That email is already in use" });
     } else {
-     pool.query(query, [name, email, password], (error, result) => {
+     pool.query(query, [name, email, hashedPassword], (error, result) => {
         if (error) {
           console.error(error);
           return res
             .status(500)
             .json({ error: "Error inserting data into the database" });
         }
-        console.log(password);
+        // console.log(password);
         console.log("Data inserted successfully");
         return res.status(200).json({ message: "Sign up successful" });
       });
@@ -402,12 +402,14 @@ app.post("/signUps", async (req, res) => {
   });
 });
   
+
   
 app.post("/signUpAdmins", async (req, res) => {
   // console.log("haya baas");
-  const { name, email, password, phone_number, description } = req.body; 
-  // const hashedPassword = await bcrypt.hash(password, 10);
-  const checkEmail = "SELECT * FROM users WHERE email = $1";
+  const { name, email, password, phone_number, description } = req.body;
+  // console.log(password);
+  const hashedPassword = await bcrypt.hash(password, 10);
+   const checkEmail = "SELECT * FROM users WHERE email = $1";
   const query =
     "INSERT INTO Admins (name, email, password, phone_number, description) VALUES ($1, $2, $3, $4, $5) RETURNING *";
  pool.query(checkEmail, [email], (error, result) => {
@@ -418,7 +420,7 @@ app.post("/signUpAdmins", async (req, res) => {
     } else {
      pool.query(
         query,
-        [name, email, password, phone_number, description],
+        [name, email, hashedPassword, phone_number, description],
         (error, result) => {
           if (error) {
             // console.log(error);
